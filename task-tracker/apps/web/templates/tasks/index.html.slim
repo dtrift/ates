@@ -1,0 +1,61 @@
+h1 Task tracker
+
+hr
+div
+  h2 Current account
+  = session[:account].to_h
+hr
+
+h2 Tasks
+
+= link_to 'Add new task', routes.new_task_path, class: 'btn btn-info'
+
+br
+br
+br
+
+h2 My tasks
+
+- if my_tasks.any?
+  div
+    table.table
+      thead
+        tr
+          th scope="col"  #
+          th scope="col"  Public ID
+          th scope="col"  Title
+          th scope="col"  Description
+          th scope="col"  Status
+          th scope="col"  Meta
+      tbody
+        - my_tasks.each do |task|
+          tr
+            th scope="row" = task.id
+            td = task.public_id	
+            td = task.title
+            td = task.description
+            td = task.status
+            td = task.meta.to_s
+
+  br
+  br
+
+div
+  table.table
+    thead
+      tr
+        th scope="col"  #
+        th scope="col"  Public ID
+        th scope="col"  Title
+        th scope="col"  Description
+        th scope="col"  Status
+        th scope="col"  Meta
+    tbody
+      - tasks.each do |task|
+        tr
+          th scope="row" = task.id
+          td = task.public_id	
+          td = task.title
+          td = task.description
+          td = task.status
+          td = task.meta.to_s
