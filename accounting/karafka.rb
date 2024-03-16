@@ -32,7 +32,7 @@ class App < Karafka::App
     # Karafka will autodiscover kafka_hosts based on Zookeeper but we need it set manually
     # to run tests without running kafka and zookeper
     config.kafka.seed_brokers = %w[kafka://localhost:9092]
-    config.client_id = 'task_tracker_service'
+    config.client_id = 'accounting_service'
     config.backend = :inline
     config.batch_fetching = true
     # Enable those 2 lines if you use Rails and want to use hash with indifferent access for
@@ -70,6 +70,11 @@ App.consumer_groups.draw do
 
     topic :accounts do
       consumer KafkaApp::Consumers::AccountChanges
+      parser JsonDeserializer
+    end
+
+    topic :tasks do
+      consumer KafkaApp::Consumers::TaskChanges
       parser JsonDeserializer
     end
   end

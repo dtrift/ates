@@ -19,7 +19,7 @@ module Web
               actor_public_id: current_account.public_id
             }
           }
-          WaterDrop::SyncProducer.call(event.to_json, topic: 'inprogress-tasks')
+          WaterDrop::SyncProducer.call(event.to_json, topic: 'task-tracker-inprogress-tasks')
           # --------------------------------------------------------------------
 
           redirect_to routes.root_path
