@@ -11,7 +11,7 @@ module KafkaApp
 
           case message['event_name']
           when 'AccountCreated'
-            # TODO: if you want
+            # TODO: store accounts in DB
           when 'AccountUpdated'
             account_repo.update_by_public_id(
               message['data']['public_id'],
@@ -19,7 +19,7 @@ module KafkaApp
               position: message['data']['position']
             )
           when 'AccountDeleted'
-            # TODO: if you want
+            # TODO: remove accounts from DB
           when 'AccountRoleChanged'
             account_repo.update_by_public_id(message['data']['public_id'], role: message['data']['role'])
           else

@@ -1,4 +1,4 @@
-# Task tracker SaaS repository
+# Accounting SaaS repository
 
 ## Start project
 
