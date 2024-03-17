@@ -1,7 +1,12 @@
 # Awesome Task Exchange System (aTES) app
 
-Code example for ["Асинхронная архитектура" course](http://education.borshev.com/architecture)
+Code example for ["Асинхронная архитектура"](http://education.borshev.com/architecture) course
 
+## Model of the system
+<img width="1200px" src="./media/images/ates-model-of-the-system.png" alt="ates-model-of-the-system.png" />
+
+## Data model
+<img width="1200px" src="./media/images/ates-data-model.png" alt="ates-data-model.png" />
 
 ## Routes
 
