@@ -78,17 +78,27 @@ class KarafkaApp < Karafka::App
         deserializer EmptyDeserializer.new
       end
 
-      topic :'inprogress-tasks' do
+      topic :'task-tracker-created-tasks' do
         consumer AnalyticsConsumer
         deserializer EmptyDeserializer.new
       end
 
-      topic :'closed-tasks' do
+      topic :'task-tracker-inprogress-tasks' do
         consumer AnalyticsConsumer
         deserializer EmptyDeserializer.new
       end
 
-      topic :'task-statuses' do
+      topic :'task-tracker-closed-tasks' do
+        consumer AnalyticsConsumer
+        deserializer EmptyDeserializer.new
+      end
+
+      topic :'accounting-created-tasks' do
+        consumer AnalyticsConsumer
+        deserializer EmptyDeserializer.new
+      end
+
+      topic :'accounting-task-cost-is-set' do
         consumer AnalyticsConsumer
         deserializer EmptyDeserializer.new
       end
