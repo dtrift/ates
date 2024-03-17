@@ -16,21 +16,33 @@ module KafkaApp
               description: params[:task][:description],
               public_id: SecureRandom.uuid,
               account_id: current_account.id,
-              status: params[:task][:status],
-              cost: tasks.set_cost_by_status(params[:task][:status])
+              status: params[:task][:status]
+            )
+
+            task_cost = task_costs.create(
+              task_public_id: task.public_id,
+              value: task_cost_repo.set_cost
             )
   
             # ----------------------------- produce event -----------------------
-            event = {
+           task_event = {
               event_name: 'TaskCreated',
               data: {
                 public_id: task.public_id,
                 title: task.title,
-                description: task.description,
-                cost: task.cost
+                description: task.description
               }
             }
-            WaterDrop::SyncProducer.call(event.to_json, topic: 'accounting-created-tasks')
+
+            task_cost_event ={
+              event_name: 'TaskCostIsSet',
+              data: {
+                task_id: task.id,
+                value: task_cost.value
+              }
+            }
+            WaterDrop::SyncProducer.call(task_event.to_json, topic: 'accounting-created-tasks')
+            WaterDrop::SyncProducer.call(task_cost_event.to_json, topic: 'accounting-task-cost-is-set')
             # --------------------------------------------------------------------
           when 'TaskUpdated'
             task_repo.update_by_public_id(
@@ -45,6 +57,10 @@ module KafkaApp
 
       def task_repo
         Container['repositories.task']
+      end
+
+      def task_cost_repo
+        Container['repositories.task_cost']
       end
     end
   end
