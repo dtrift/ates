@@ -11,11 +11,13 @@ Code example for ["Асинхронная архитектура"](http://educat
 ## Schema Registry (events validations)
 git: https://github.com/dtrift/event_schema_registry.git
 
+```
 result = SchemaRegistry.validate_event(event, <SCHEMA_NAME>, version: <VERSION_NUMBER>)
 
 if result.success?
   kafka.produce('topic', event.to_json)
 end
+```
 
 ## Routes
 
