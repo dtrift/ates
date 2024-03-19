@@ -12,11 +12,11 @@ module KafkaApp
           case message['event_name']
           when 'TaskCreated'
             task = tasks.create(
-              title: params[:task][:title],
-              description: params[:task][:description],
-              public_id: SecureRandom.uuid,
+              title: message[:task][:title],
+              description: message[:task][:description],
+              public_id: message[:task][:public_id],
               account_id: current_account.id,
-              status: params[:task][:status]
+              status: message[:task][:status]
             )
 
             task_cost = task_costs.create(
@@ -25,8 +25,8 @@ module KafkaApp
             )
   
             # ----------------------------- produce event -----------------------
-           task_event = {
-              event_name: 'TaskCreated',
+            task_event = {
+              event_name: 'AccountingTaskCreated',
               data: {
                 public_id: task.public_id,
                 title: task.title,
@@ -34,15 +34,39 @@ module KafkaApp
               }
             }
 
-            task_cost_event ={
-              event_name: 'TaskCostIsSet',
+            task_cost_event = {
+              event_name: 'AccountingTaskCostIsSet',
               data: {
                 task_id: task.id,
                 value: task_cost.value
               }
             }
-            WaterDrop::SyncProducer.call(task_event.to_json, topic: 'accounting-created-tasks')
-            WaterDrop::SyncProducer.call(task_cost_event.to_json, topic: 'accounting-task-cost-is-set')
+
+            task_event_result = SchemaRegistry.validate_event(
+              task_event,
+              'accounting.tasks.created',
+              version: 1
+            )
+
+            if task_event_result.success?
+              WaterDrop::SyncProducer.call(
+                task_event.to_json,
+                topic: 'accounting-created-tasks'
+              )
+            end
+
+            task_cost_event_result = SchemaRegistry.validate_event(
+              task_cost_event,
+              'accounting.tasks.changes',
+              version: 1
+            )
+            
+            if task_cost_event_result.success?
+              WaterDrop::SyncProducer.call(
+                task_cost_event.to_json,
+                topic: 'accounting-task-cost-is-set'
+              )
+            end
             # --------------------------------------------------------------------
           when 'TaskUpdated'
             task_repo.update_by_public_id(

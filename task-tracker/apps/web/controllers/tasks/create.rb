@@ -26,7 +26,16 @@ module Web
               status: task.status
             }
           }
-          WaterDrop::SyncProducer.call(event.to_json, topic: 'task-tracker-created-tasks')
+
+          result = SchemaRegistry.validate_event(
+            event,
+            'tasks.created',
+            version: 1
+          )
+
+          if result.success?
+            WaterDrop::SyncProducer.call(event.to_json, topic: 'task-tracker-created-tasks')
+          end
           # --------------------------------------------------------------------
 
           redirect_to routes.root_path

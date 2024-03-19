@@ -39,7 +39,15 @@ class AccountsController < ApplicationController
           }
         }
 
-        WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts-stream')
+        result = SchemaRegistry.validate_event(
+          event,
+          'accounts.updated',
+          version: 1
+        )
+        
+        if result.success?
+          WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts-stream')
+        end
         # --------------------------------------------------------------------
 
         if new_role
@@ -47,7 +55,16 @@ class AccountsController < ApplicationController
             event_name: 'AccountRoleChanged',
             data: { public_id: public_id, role: role }
           }
-          WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts')
+
+          result = SchemaRegistry.validate_event(
+            event,
+            'accounts.role_changed',
+            version: 1
+          )
+
+          if result.success?
+            WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts')
+          end
         end
 
         # --------------------------------------------------------------------
@@ -74,8 +91,16 @@ class AccountsController < ApplicationController
       data: { public_id: @account.public_id }
     }
 
-    WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts-stream')
-    # --------------------------------------------------------------------
+    result = SchemaRegistry.validate_event(
+      event,
+      'accounts.deleted',
+      version: 1
+    )
+
+    if result.success?
+      WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts-stream')
+    end
+      # --------------------------------------------------------------------
 
     respond_to do |format|
       format.html { redirect_to root_path, notice: 'Account was successfully destroyed.' }
