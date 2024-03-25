@@ -22,10 +22,20 @@ module Web
             data: {
               public_id: task.public_id,
               title: task.title,
-              description: task.description
+              description: task.description,
+              status: task.status
             }
           }
-          WaterDrop::SyncProducer.call(event.to_json, topic: 'billing-created-tasks')
+
+          result = SchemaRegistry.validate_event(
+            event,
+            'tasks.created',
+            version: 1
+          )
+
+          if result.success?
+            WaterDrop::SyncProducer.call(event.to_json, topic: 'task-tracker-created-tasks')
+          end
           # --------------------------------------------------------------------
 
           redirect_to routes.root_path

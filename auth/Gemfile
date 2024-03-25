@@ -26,6 +26,7 @@ gem 'mimemagic', '~> 0.3.7'
 
 # Events
 gem 'waterdrop'
+gem 'schema_registry', git: 'https://github.com/dtrift/event_schema_registry.git'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
